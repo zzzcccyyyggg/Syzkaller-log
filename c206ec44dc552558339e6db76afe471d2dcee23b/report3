@@ -1,0 +1,50 @@
+assertion failed: fs_info->exclusive_operation == BTRFS_EXCLOP_BALANCE_PAUSED :: 0, in fs/btrfs/fs.c:127
+------------[ cut here ]------------
+kernel BUG at fs/btrfs/fs.c:127!
+Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
+CPU: 0 UID: 0 PID: 95466 Comm: syz-executor.6 Not tainted 6.16.0-rc1-g7f6432600434-dirty #52 PREEMPT(voluntary) 
+Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+RIP: 0010:btrfs_exclop_balance+0x632/0x640 fs/btrfs/fs.c:127
+Code: b5 fe e8 11 0c c7 fe 48 c7 c7 60 06 19 9c 48 c7 c6 80 08 19 9c 31 d2 48 c7 c1 40 08 19 9c 41 b8 7f 00 00 00 e8 7f 2e 7b fe 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffff88811c37fd88 EFLAGS: 00010246
+RAX: 0000000000000068 RBX: 0000000000000000 RCX: 7c00c5848baac500
+RDX: ffffc9001dfc5000 RSI: 000000000000092e RDI: 000000000000092f
+RBP: 1ffff110277c95ae R08: ffff88811c37fc2f R09: 1ffff1102386ff85
+R10: dffffc0000000000 R11: ffffed102386ff86 R12: ffff88813be4ad70
+R13: 1ffffda204ef92b5 R14: dffffc0000000000 R15: ffffed10277c95ae
+FS:  00007fda4d92c6c0(0000) GS:ffff88840ff1b000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b31222000 CR3: 000000012ebdb000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ btrfs_ioctl_balance+0x9bd/0xf10 fs/btrfs/ioctl.c:3548
+ btrfs_ioctl+0x104f/0x1480 fs/btrfs/ioctl.c:5303
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xd1/0x130 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcf/0x240 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fda4e7fa35d
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fda4d92c0a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007fda4e94c1f0 RCX: 00007fda4e7fa35d
+RDX: 0000000020008c40 RSI: 00000000c4009420 RDI: 0000000000000003
+RBP: 00007fda4e86b4b1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: ffffffffffffffb8 R14: 00007fda4e94c1f0 R15: 00007ffc61c2f0d0
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:btrfs_exclop_balance+0x632/0x640 fs/btrfs/fs.c:127
+Code: b5 fe e8 11 0c c7 fe 48 c7 c7 60 06 19 9c 48 c7 c6 80 08 19 9c 31 d2 48 c7 c1 40 08 19 9c 41 b8 7f 00 00 00 e8 7f 2e 7b fe 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffff88811c37fd88 EFLAGS: 00010246
+RAX: 0000000000000068 RBX: 0000000000000000 RCX: 7c00c5848baac500
+RDX: ffffc9001dfc5000 RSI: 000000000000092e RDI: 000000000000092f
+RBP: 1ffff110277c95ae R08: ffff88811c37fc2f R09: 1ffff1102386ff85
+R10: dffffc0000000000 R11: ffffed102386ff86 R12: ffff88813be4ad70
+R13: 1ffffda204ef92b5 R14: dffffc0000000000 R15: ffffed10277c95ae
+FS:  00007fda4d92c6c0(0000) GS:ffff88840ff1b000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b31222000 CR3: 000000012ebdb000 CR4: 00000000000006f0
+note: syz-executor.6[95466] exited with preempt_count 1

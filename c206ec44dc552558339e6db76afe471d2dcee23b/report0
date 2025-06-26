@@ -1,0 +1,56 @@
+assertion failed: fs_info->exclusive_operation == BTRFS_EXCLOP_BALANCE_PAUSED, in fs/btrfs/fs.c:129
+------------[ cut here ]------------
+kernel BUG at fs/btrfs/fs.c:129!
+Oops: invalid opcode: 0000 [#1] PREEMPT SMP KASAN NOPTI
+CPU: 3 UID: 0 PID: 4169 Comm: syz-executor.7 Not tainted 6.14.0-rc4-g63c98c351fa2-dirty #131
+Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+RIP: 0010:btrfs_exclop_balance+0x44f/0x460 fs/btrfs/fs.c:129
+Code: e8 16 72 27 fe e8 11 72 27 fe 48 c7 c7 20 81 dd b3 48 c7 c6 40 83 dd b3 48 c7 c2 00 83 dd b3 b9 81 00 00 00 e8 02 66 df fd 90 <0f> 0b 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90
+RSP: 0018:ffff88815597fde0 EFLAGS: 00010246
+RAX: 0000000000000063 RBX: ffffed1028af49a9 RCX: cc2c8985ffd84500
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88815597fc48
+RBP: 1ffff11028af49a9 R08: ffff88815597fc4f R09: 1ffff1102ab2ff89
+R10: dffffc0000000000 R11: ffffed102ab2ff8a R12: 1ffffda20515e935
+R13: dffffc0000000000 R14: ffff8881457a4d48 R15: ffff8881457a42a8
+FS:  00007ff0acabe6c0(0000) GS:ffff8883ae780000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055555ababda8 CR3: 000000015229e000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ btrfs_ioctl_balance+0x70c/0xb00 fs/btrfs/ioctl.c:3552
+ btrfs_ioctl+0xdc0/0x10e0 fs/btrfs/ioctl.c:5305
+ __se_sys_ioctl+0xd1/0x130
+ do_syscall_64+0xc9/0x1a0
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7ff0ad74a35d
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ff0acabe0a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007ff0ad89c050 RCX: 00007ff0ad74a35d
+RDX: 0000000020002840 RSI: 00000000c4009420 RDI: 0000000000000045
+RBP: 00007ff0ad7bb4b1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: ffffffffffffffb8 R14: 00007ff0ad89c050 R15: 00007ffd9f1a5010
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:btrfs_exclop_balance+0x44f/0x460 fs/btrfs/fs.c:129
+Code: e8 16 72 27 fe e8 11 72 27 fe 48 c7 c7 20 81 dd b3 48 c7 c6 40 83 dd b3 48 c7 c2 00 83 dd b3 b9 81 00 00 00 e8 02 66 df fd 90 <0f> 0b 66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90
+RSP: 0018:ffff88815597fde0 EFLAGS: 00010246
+RAX: 0000000000000063 RBX: ffffed1028af49a9 RCX: cc2c8985ffd84500
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88815597fc48
+RBP: 1ffff11028af49a9 R08: ffff88815597fc4f R09: 1ffff1102ab2ff89
+R10: dffffc0000000000 R11: ffffed102ab2ff8a R12: 1ffffda20515e935
+R13: dffffc0000000000 R14: ffff8881457a4d48 R15: ffff8881457a42a8
+FS:  00007ff0acabe6c0(0000) GS:ffff8883ae780000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055555ababda8 CR3: 000000015229e000 CR4: 00000000000006f0
+note: syz-executor.7[4169] exited with preempt_count 1
+BTRFS error: failed to open device for path h’¬õ˛[v`“S ä‹6•Üí≥â°7Ú•¬gUûá
+\;9~Œ-˝»kFÑl6£â@ û#h†`À7÷fˇìó∆J„™ [g≥Ú£5Ô'Èõ∞ with flags 0x1: -2
+BTRFS error: failed to open device for path áÜûZÒö∏q$˚ªﬂ’à^”ŸS˘e"®»x("Ê°’¨–ô«©‡Có∑ÆêáôHp€ with flags 0x1: -2
+syz-executor.5 (4164) used greatest stack depth: 21920 bytes left
+BTRFS error: failed to open device for path ékÙ÷Ó›_$¸≈äﬂª∑MU/µÒ•∂£„)Sr·oôâﬂ(œ/˝Ib"iLÓÁÊRÑ–ÕïÜ™◊*»o¢M®¢AuÄÜ~îÚNÿΩ‘I∫Gv#|Àói4∑íS%•SöæËÁ«"[∂˜$<U<ÒE^°C>é¬psµÀ«x<ü˘è(ˆ	ºÎ÷)S?ôII•˙ZyèÀ‰IˆY—Ö{Ùh‡⁄å ˙J≤ä{w†Êª†  øÚ%‡v‹hÇõ—~
+>Ò.¨-ÅjÊ%˚´2íf≤4x´§⁄hIÖ%xÚRGÛ'7#ëÇåßyπã“U2@!;J›Â|%∑°>à'µ;{ßølhÙ°z¨¸(ì’˙√#œ4>ä„ﬂ¡@[ûˇôi™à˝GÓbgiFê˙í…£W¶B¶¡$'jÁMI¢£ﬁÂøåÎ60Ô√9õÀÜÌ¥Â_Æª˚4f¢Ô≤ãÛﬂî6T‹˜˘$o with flags 0x1: -2
+BTRFS error: failed to open device for path æÇÌ)éçØØÏ¡˝´‹ÍµÿUãôªÚE¡q(√ÆQ	ˇœ}4_\ÇÏÊn˙âï±L^dnM8të"ñ„œ≠ûÅ·˜$BñàÙ≈“ˇÈÕü°Eâ∞¨ú–>tÍ∞W3m7È„›Ëó6é6ˇ–ƒN`è„∑ÃÓ{33Û≈œº	wDáîìµÎ[AçâQòÌ≥´µ1›Á0|≤,¥ç´Äòó%è™{Q6˚G£U
+ h®⁄èSF¿W‹¸öÖ~m∞f,ÌdRöé?!dπ>vSj:ﬁ«Y+T¸¢EY¬≤lë¬øπ˛ìT;[ÎT60£Çõ¿íÙã0©O˙WF*O^0˘∆v¶HÉ_iSπêO'éFÓ†…∑^@¿ÀÉ£@3ìî^˚ˆ˘4µ&ªkSÂí2?Á,«è√øﬁOØnt≈>œ‹≠äê¨¨ú⁄πî`è‘f'iäpáˆ! with flags 0x1: -36
+BTRFS info (device sdb): qgroup scan completed (inconsistency flag cleared)

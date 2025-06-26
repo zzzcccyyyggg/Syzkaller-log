@@ -1,0 +1,71 @@
+assertion failed: fs_info->exclusive_operation == BTRFS_EXCLOP_BALANCE_PAUSED :: 0, in fs/btrfs/fs.c:127
+BTRFS warning (device sdb): get dev_stats failed, device not found
+------------[ cut here ]------------
+kernel BUG at fs/btrfs/fs.c:127!
+Oops: invalid opcode: 0000 [#1] SMP KASAN NOPTI
+BTRFS warning (device sdb): get dev_stats failed, device not found
+CPU: 1 UID: 0 PID: 30901 Comm: syz-executor.0 Not tainted 6.16.0-rc1-g7f6432600434-dirty #51 PREEMPT(voluntary) 
+BTRFS warning (device sdb): get dev_stats failed, device not found
+Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+RIP: 0010:btrfs_exclop_balance+0x632/0x640 fs/btrfs/fs.c:127
+Code: b5 fe e8 11 0c c7 fe 48 c7 c7 60 06 39 86 48 c7 c6 80 08 39 86 31 d2 48 c7 c1 40 08 39 86 41 b8 7f 00 00 00 e8 7f 2e 7b fe 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffff888144b47d88 EFLAGS: 00010246
+RAX: 0000000000000068 RBX: 0000000000000000 RCX: a1964783396bde00
+RDX: ffffc90018ba3000 RSI: 0000000000006b11 RDI: 0000000000006b12
+RBP: 1ffff11027521dae R08: ffff888144b47c2f R09: 1ffff11028968f85
+R10: dffffc0000000000 R11: ffffed1028968f86 R12: ffff88813a90ed70
+R13: 1ffffda204ea43b5 R14: dffffc0000000000 R15: ffffed1027521dae
+FS:  00007f33f695f6c0(0000) GS:ffff888425d9b000(0000) knlGS:0000000000000000
+BTRFS warning (device sdb): get dev_stats failed, device not found
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+BTRFS warning (device sdb): get dev_stats failed, device not found
+CR2: 0000000021000000 CR3: 000000013a360000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+BTRFS warning (device sdb): get dev_stats failed, device not found
+ btrfs_ioctl_balance+0x9bd/0xf10 fs/btrfs/ioctl.c:3548
+ btrfs_ioctl+0x104f/0x1480 fs/btrfs/ioctl.c:5303
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xd1/0x130 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcf/0x240 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f33f75ca35d
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+BTRFS warning (device sdb): get dev_stats failed, device not found
+RSP: 002b:00007f33f695f0a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f33f771bf80 RCX: 00007f33f75ca35d
+RDX: 0000000020001640 RSI: 00000000c4009420 RDI: 0000000000000007
+RBP: 00007f33f763b4b1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: ffffffffffffffb8 R14: 00007f33f771bf80 R15: 00007ffce5cac050
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:btrfs_exclop_balance+0x632/0x640 fs/btrfs/fs.c:127
+Code: b5 fe e8 11 0c c7 fe 48 c7 c7 60 06 39 86 48 c7 c6 80 08 39 86 31 d2 48 c7 c1 40 08 39 86 41 b8 7f 00 00 00 e8 7f 2e 7b fe 90 <0f> 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90
+RSP: 0018:ffff888144b47d88 EFLAGS: 00010246
+RAX: 0000000000000068 RBX: 0000000000000000 RCX: a1964783396bde00
+RDX: ffffc90018ba3000 RSI: 0000000000006b11 RDI: 0000000000006b12
+RBP: 1ffff11027521dae R08: ffff888144b47c2f R09: 1ffff11028968f85
+R10: dffffc0000000000 R11: ffffed1028968f86 R12: ffff88813a90ed70
+R13: 1ffffda204ea43b5 R14: dffffc0000000000 R15: ffffed1027521dae
+FS:  00007f33f695f6c0(0000) GS:ffff888425d9b000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000021000000 CR3: 000000013a360000 CR4: 00000000000006f0
+note: syz-executor.0[30901] exited with preempt_count 1
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS error: failed to open device for path 5‚°Z¡,"¼–µ*%ÐfYUãÔÍ³’5>ÈB‡in»M^KGnEÐ‚Î5þßûÙ3É!“ÙçàÝãTœ¶¶€y½[’@š4l‹irÕxIcá­uqzŸ®1rmÉ/p€oùjÄ¡5DèVÖtã¢€äý÷7ö¦CCŒ)‘]ÍÄ¬kO¢’T(3Œþ¦J9ƒçs ¨EìäÐM5š]ðÓr„ÍùïmÅìzßë´6øu@S(KacÕ>²U)ºÌ½Qy=S[k%YC™„:–qX{ŒÛªš“3ÿ–]qÐ	x¶oïÊ£HÏïIö³wŒa ±n“=¸’æ?«7‚¥í°bÇtnd‚7èÓh1œÐ’ëF¡÷š‡qÝ5ØçÂ=L=äJiÃ#¯YGûÏN‚Çè0Ogæ_ÐÌH9wÓšCš­Æ~å>@ÞIã<lNV[Fo“	!ï£…ßÂ./*s^…aG²íÔh3rú:Ô(¸~Žu×’/‡÷·üOÌ°ä/©c9E‚[EDà1À:óU©û6!Í with flags 0x1: -2
+BTRFS error: failed to open device for path ý
+ZÍu¥ÖˆåV}ù£skÎ‚NèeJ‡·‹¯< à¥ÙŽ”o²5Ù#ÿÙXÎ|Xe,kÓëLý†6<½:¨@fqÐã• ˆ³9ü‚¼¡¾Ñ8èð³šy:szå´–ù+¸r7ù“ûVìò÷(ZeC°¦®®h…¾LF?E"°0-›8½™oÔ]ã‡w~Ñm²åŸ™YzÞ›Ýü<¹ä-;føôõÙÆ/í,‹µ[/£wƒÝ¶B´k|½Seé9yBÎ —[¬ÂÏÐ_l¯æô½}Aòº’Ý¾tÕÎùù@=	ù„LïØç·Ì 1î§a­liÓQÇQqîº÷«×bj1ßTÂ with flags 0x1: -2
