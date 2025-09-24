@@ -1,0 +1,362 @@
+==================================================================
+BUG: KASAN: slab-use-after-free in __list_del include/linux/list.h:195 [inline]
+BUG: KASAN: slab-use-after-free in __list_del_entry include/linux/list.h:218 [inline]
+BUG: KASAN: slab-use-after-free in list_del include/linux/list.h:229 [inline]
+BUG: KASAN: slab-use-after-free in __del_qgroup_rb+0x236/0x1910 fs/btrfs/qgroup.c:235
+Write of size 8 at addr ffff88811d1b6490 by task syz-executor.0/16232
+
+CPU: 0 UID: 0 PID: 16232 Comm: syz-executor.0 Not tainted 6.16.0-rc1 #83 PREEMPT(voluntary) 
+Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:94 [inline]
+ dump_stack_lvl+0x142/0x1a0 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:408 [inline]
+ print_report+0x191/0x5b0 mm/kasan/report.c:521
+ kasan_report+0x139/0x170 mm/kasan/report.c:634
+ __list_del include/linux/list.h:195 [inline]
+ __list_del_entry include/linux/list.h:218 [inline]
+ list_del include/linux/list.h:229 [inline]
+ __del_qgroup_rb+0x236/0x1910 fs/btrfs/qgroup.c:235
+ btrfs_free_qgroup_config+0xa1/0x2e0 fs/btrfs/qgroup.c:647
+ btrfs_quota_disable+0x908/0x2960 fs/btrfs/qgroup.c:1400
+ btrfs_ioctl_quota_ctl+0x428/0x570 fs/btrfs/ioctl.c:3703
+ btrfs_ioctl+0xb9e/0x1530 fs/btrfs/ioctl.c:5323
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xf3/0x160 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcf/0x240 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7faf3aa7935d
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007faf39e0f0a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007faf3abcbf80 RCX: 00007faf3aa7935d
+RDX: 0000000020000080 RSI: 00000000c0109428 RDI: 0000000000000004
+RBP: 00007faf3aaea4b1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: ffffffffffffffb8 R14: 00007faf3abcbf80 R15: 00007ffef4e1c870
+ </TASK>
+
+BTRFS info (device sdb): scrub: finished on devid 1 with status: 0
+Allocated by task 14800:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3f/0x80 mm/kasan/common.c:68
+ poison_kmalloc_redzone mm/kasan/common.c:377 [inline]
+ __kasan_kmalloc+0x82/0x90 mm/kasan/common.c:394
+ kmalloc_noprof include/linux/slab.h:905 [inline]
+ kzalloc_noprof include/linux/slab.h:1039 [inline]
+ btrfs_create_qgroup+0x67c/0x1580 fs/btrfs/qgroup.c:1704
+ btrfs_ioctl_qgroup_create+0x7eb/0x9c0 fs/btrfs/ioctl.c:3848
+ btrfs_ioctl+0x4ef/0x1530 fs/btrfs/ioctl.c:5327
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xf3/0x160 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcf/0x240 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Freed by task 16232:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3f/0x80 mm/kasan/common.c:68
+ kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:576
+ poison_slab_object mm/kasan/common.c:247 [inline]
+ __kasan_slab_free+0x36/0x50 mm/kasan/common.c:264
+ kasan_slab_free include/linux/kasan.h:233 [inline]
+ slab_free_hook mm/slub.c:2388 [inline]
+ slab_free mm/slub.c:4670 [inline]
+ kfree+0x193/0x3b0 mm/slub.c:4869
+ btrfs_free_qgroup_config+0xcd/0x2e0 fs/btrfs/qgroup.c:650
+ btrfs_quota_disable+0x908/0x2960 fs/btrfs/qgroup.c:1400
+ btrfs_ioctl_quota_ctl+0x428/0x570 fs/btrfs/ioctl.c:3703
+ btrfs_ioctl+0xb9e/0x1530 fs/btrfs/ioctl.c:5323
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xf3/0x160 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcf/0x240 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+The buggy address belongs to the object at ffff88811d1b6400
+ which belongs to the cache kmalloc-512 of size 512
+The buggy address is located 144 bytes inside of
+ freed 512-byte region [ffff88811d1b6400, ffff88811d1b6600)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff88811d1b5800 pfn:0x11d1b4
+head: order:2 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0x200000000000240(workingset|head|node=0|zone=2)
+page_type: f5(slab)
+raw: 0200000000000240 ffff888100042c80 ffffea00047b1210 ffffea0004797110
+raw: ffff88811d1b5800 0000000000100006 00000000f5000000 0000000000000000
+head: 0200000000000240 ffff888100042c80 ffffea00047b1210 ffffea0004797110
+head: ffff88811d1b5800 0000000000100006 00000000f5000000 0000000000000000
+head: 0200000000000002 ffffea0004746d01 00000000ffffffff 00000000ffffffff
+head: 000000000000003b 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88811d1b6380: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88811d1b6400: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88811d1b6480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                         ^
+ ffff88811d1b6500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88811d1b6580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): can't clear the free_space_tree feature bit while mounted
+BTRFS info (device sdb): scrub: started on devid 1
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS info (device sdb): balance: resume -sprofiles=system,usage=1110859819,drange=8..53339
+BTRFS info (device sdb): scrub: not finished on devid 1 with status: -125
+BTRFS info (device sdb): balance: ended with status: 0
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): can't clear the free_space_tree feature bit while mounted
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS info (device sdb): scrub: started on devid 1
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS info (device sdb): balance: start -s
+BTRFS warning (device sdb): can't clear the free_space_tree,compat_ro:1 feature bits while mounted
+BTRFS info (device sdb): balance: ended with status: 0
+BTRFS info (device sdb): scrub: finished on devid 1 with status: 0
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS info (device sdb): scrub: started on devid 1
+BTRFS warning (device sdb): can't clear the compat:1 feature bit while mounted
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS warning (device sdb): can't clear the free_space_tree,compat_ro:1 feature bits while mounted
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS warning (device sdb): failed to trim 6 block group(s), last error -512
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS info (device sdb): balance: start 
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS error: failed to open device for path ;û›ææ˝≈°R€væ2£/lΩ™ππ∆Eò˜/‹VÇ‘TÉµì&]BùPÏÉ
+€ Ó”cÜñß˙iátú≠#˘€GÜÊ¥Ö&-EÉŸˆâ}íízw
+◊OÇÂt>8ts-+%©¨+:Ü(WÎM¿EÑÀ“Nn"…¯‘P,|´÷⁄Å™±I¢UÕxaΩñÍÃƒ≥:s»JÅ	§}ı£ÂûEâù¬v~t¯dä=»¨´/ÔÜßcbÓh$Ï˚ÊãÊ¸≤≥ªÆ≈Í∑pÆ®ï|6^„Ç°∞fjnÒÇ[l	g$„€:2∑aÖ∑‚n„Úi◊djΩ1ŸGéúÁ\	l‹>®Uæ—ÊÕ:Üâù‘Ùâ with flags 0x1: -2
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS info (device sdb): balance: ended with status: 0
+BTRFS info (device sdb): balance: start 
+BTRFS info (device sdb): balance: ended with status: 0
+BTRFS info (device sdb): scrub: finished on devid 1 with status: 0
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): can't clear the compat:0,compat:1 feature bits while mounted
+BTRFS info (device sdb): scrub: started on devid 1
+BTRFS info (device sdb): scrub: finished on devid 1 with status: 0
+BTRFS info (device sdb): balance: start 
+BTRFS error: failed to open device for path +L◊Ñ ˇ°LÀä6¿ı3Ö/ with flags 0x1: -2
+BTRFS info (device sdb): balance: ended with status: 0
+BTRFS error: failed to open device for path +L◊Ñ ˇ°LÀä6¿ı3Ö/ with flags 0x1: -2
+BTRFS error: failed to open device for path +L◊Ñ ˇ°LÀä6¿ı3Ö/ with flags 0x1: -2
+BTRFS error: failed to open device for path +L◊Ñ ˇ°LÀä6¿ı3Ö/ with flags 0x1: -2
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS info (device sdb): scrub: started on devid 1
+BTRFS warning (device sdb): can't clear the compat:0,compat:1 feature bits while mounted
+BTRFS info (device sdb): scrub: finished on devid 1 with status: 0
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS info (device sdb): balance: start 
+BTRFS warning (device sdb): can't clear the free_space_tree,compat_ro:1 feature bits while mounted
+BTRFS info (device sdb): balance: ended with status: 0
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): can't clear the free_space_tree,compat_ro:1 feature bits while mounted
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS error: failed to open device for path 5áõ¨[
+°\bO6¿JÈœ%]ÿ@@˘®ú˛„EI°Ä:%«4‰æT©¥)ê¸H˛ØO^©AÃ—,2míc±›∑–4é"ÑÇæõ+2∆∏˘V¸◊ with flags 0x1: -2
+BTRFS error: failed to open device for path 5áõ¨[
+°\bO6¿JÈœ%]ÿ@@˘®ú˛„EI°Ä:%«4‰æT©¥)ê¸H˛ØO^©AÃ—,2míc±›∑–4é"ÑÇæõ+2∆∏˘V¸◊ with flags 0x1: -2
+BTRFS error: failed to open device for path 5áõ¨[
+°\bO6¿JÈœ%]ÿ@@˘®ú˛„EI°Ä:%«4‰æT©¥)ê¸H˛ØO^©AÃ—,2míc±›∑–4é"ÑÇæõ+2∆∏˘V¸◊ with flags 0x1: -2
+BTRFS warning (device sdb): get dev_stats failed, device not found
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS warning (device sdb): can't clear the compat_ro:1 feature bit while mounted
+BTRFS info (device sdb): balance: start 
+BTRFS info (device sdb): balance: ended with status: 0
+Oops: general protection fault, probably for non-canonical address 0xff7aaf8000000004: 0000 [#1] SMP KASAN NOPTI
+KASAN: maybe wild-memory-access in range [0xfbd59c0000000020-0xfbd59c0000000027]
+CPU: 2 UID: 0 PID: 17098 Comm: syz-executor.10 Tainted: G    B               6.16.0-rc1 #83 PREEMPT(voluntary) 
+Tainted: [B]=BAD_PAGE
+Hardware name: QEMU Ubuntu 24.04 PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+RIP: 0010:__list_del include/linux/list.h:195 [inline]
+RIP: 0010:__list_del_entry include/linux/list.h:218 [inline]
+RIP: 0010:list_del_init include/linux/list.h:287 [inline]
+RIP: 0010:btrfs_run_qgroups+0x4f3/0x20f0 fs/btrfs/qgroup.c:3139
+Code: 45 00 48 89 84 24 e8 00 00 00 4c 8d 78 08 4d 89 fe 49 c1 ee 03 48 b9 00 00 00 00 00 fc ff df 4d 8d 24 0e 4c 89 e0 48 c1 e8 03 <0f> b6 04 08 84 c0 0f 85 41 10 00 00 41 0f b6 2c 24 31 ff 89 ee e8
+RSP: 0018:ffff888134037948 EFLAGS: 00010212
+RAX: 1f7ab38000000004 RBX: 649fc03ca8eb4b2e RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88813b6ef488
+RBP: ffff88813b6ef488 R08: ffffffff9e0120f3 R09: 1ffff11026806f20
+R10: dffffc0000000000 R11: ffffed1026806f21 R12: fbd59c0000000021
+R13: ffff888120aea9c0 R14: 1bd5a00000000021 R15: dead000000000108
+FS:  00007f5b0807f6c0(0000) GS:ffff88824f607000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007faf3aafb327 CR3: 00000001a1fb6000 CR4: 00000000000006f0
+Call Trace:
+ <TASK>
+ commit_cowonly_roots+0x632/0x1be0 fs/btrfs/transaction.c:1354
+ btrfs_commit_transaction+0x327c/0xe4a0 fs/btrfs/transaction.c:2457
+ btrfs_sync_fs+0x48b/0xf40 fs/btrfs/super.c:1036
+ btrfs_ioctl+0x135f/0x1530 fs/btrfs/ioctl.c:5284
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xf3/0x160 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcf/0x240 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f5b08ce935d
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f5b0807f0a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f5b08e3bf80 RCX: 00007f5b08ce935d
+RDX: 0000000000000000 RSI: 0000000000009408 RDI: 0000000000000004
+RBP: 00007f5b08d5a4b1 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: ffffffffffffffb8 R14: 00007f5b08e3bf80 R15: 00007ffe8392a4e0
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__list_del include/linux/list.h:195 [inline]
+RIP: 0010:__list_del_entry include/linux/list.h:218 [inline]
+RIP: 0010:list_del_init include/linux/list.h:287 [inline]
+RIP: 0010:btrfs_run_qgroups+0x4f3/0x20f0 fs/btrfs/qgroup.c:3139
+Code: 45 00 48 89 84 24 e8 00 00 00 4c 8d 78 08 4d 89 fe 49 c1 ee 03 48 b9 00 00 00 00 00 fc ff df 4d 8d 24 0e 4c 89 e0 48 c1 e8 03 <0f> b6 04 08 84 c0 0f 85 41 10 00 00 41 0f b6 2c 24 31 ff 89 ee e8
+RSP: 0018:ffff888134037948 EFLAGS: 00010212
+RAX: 1f7ab38000000004 RBX: 649fc03ca8eb4b2e RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88813b6ef488
+RBP: ffff88813b6ef488 R08: ffffffff9e0120f3 R09: 1ffff11026806f20
+R10: dffffc0000000000 R11: ffffed1026806f21 R12: fbd59c0000000021
+R13: ffff888120aea9c0 R14: 1bd5a00000000021 R15: dead000000000108
+FS:  00007f5b0807f6c0(0000) GS:ffff88824f607000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007faf3aafb327 CR3: 00000001a1fb6000 CR4: 00000000000006f0
+note: syz-executor.10[17098] exited with preempt_count 1
+BTRFS warning (device sdb): can't clear the compat_ro:2 feature bit while mounted
+BTRFS warning (device sdb): get dev_stats failed, device not found
+----------------
+Code disassembly (best guess):
+   0:	45 00 48 89          	add    %r9b,-0x77(%r8)
+   4:	84 24 e8             	test   %ah,(%rax,%rbp,8)
+   7:	00 00                	add    %al,(%rax)
+   9:	00 4c 8d 78          	add    %cl,0x78(%rbp,%rcx,4)
+   d:	08 4d 89             	or     %cl,-0x77(%rbp)
+  10:	fe 49 c1             	decb   -0x3f(%rcx)
+  13:	ee                   	out    %al,(%dx)
+  14:	03 48 b9             	add    -0x47(%rax),%ecx
+  17:	00 00                	add    %al,(%rax)
+  19:	00 00                	add    %al,(%rax)
+  1b:	00 fc                	add    %bh,%ah
+  1d:	ff                   	lcall  (bad)
+  1e:	df 4d 8d             	fisttps -0x73(%rbp)
+  21:	24 0e                	and    $0xe,%al
+  23:	4c 89 e0             	mov    %r12,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	0f b6 04 08          	movzbl (%rax,%rcx,1),%eax <-- trapping instruction
+  2e:	84 c0                	test   %al,%al
+  30:	0f 85 41 10 00 00    	jne    0x1077
+  36:	41 0f b6 2c 24       	movzbl (%r12),%ebp
+  3b:	31 ff                	xor    %edi,%edi
+  3d:	89 ee                	mov    %ebp,%esi
+  3f:	e8                   	.byte 0xe8
