@@ -1,0 +1,116 @@
+TITLE: KASAN: slab-use-after-free Write in sco_conn_put
+CORRUPTED: false ()
+MAINTAINERS (TO): [johan.hedberg@gmail.com linux-bluetooth@vger.kernel.org luiz.dentz@gmail.com marcel@holtmann.org]
+MAINTAINERS (CC): [linux-kernel@vger.kernel.org]
+
+==================================================================
+BUG: KASAN: slab-use-after-free in sco_conn_free net/bluetooth/sco.c:94 [inline]
+BUG: KASAN: slab-use-after-free in kref_put include/linux/kref.h:65 [inline]
+BUG: KASAN: slab-use-after-free in sco_conn_put+0x49d/0xfc0 net/bluetooth/sco.c:115
+Write of size 8 at addr ffff88810d2be350 by task kworker/u25:1/88
+CPU: 1 UID: 0 PID: 88 Comm: kworker/u25:1 Not tainted 6.17.0-rc5-g22352681e428-dirty #44 PREEMPT(voluntary)
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+Workqueue: hci0 hci_rx_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:94 [inline]
+ dump_stack_lvl+0xca/0x130 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0x171/0x7f0 mm/kasan/report.c:482
+ kasan_report+0x139/0x170 mm/kasan/report.c:595
+ sco_conn_free net/bluetooth/sco.c:94 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ sco_conn_put+0x49d/0xfc0 net/bluetooth/sco.c:115
+ sco_conn_del+0x46d/0x8d0 net/bluetooth/sco.c:280
+ sco_connect_cfm+0x83d/0x1ee0 net/bluetooth/sco.c:1468
+ hci_connect_cfm include/net/bluetooth/hci_core.h:2082 [inline]
+ hci_sco_setup+0x39c/0xd20 net/bluetooth/hci_conn.c:554
+ hci_conn_complete_evt+0x6eb/0x3270 net/bluetooth/hci_event.c:3201
+ hci_event_func net/bluetooth/hci_event.c:7545 [inline]
+ hci_event_packet+0x17cd/0x2da0 net/bluetooth/hci_event.c:7599
+ hci_rx_work+0x982/0x2210 net/bluetooth/hci_core.c:4071
+ process_one_work kernel/workqueue.c:3236 [inline]
+ process_scheduled_works+0x7a8/0x1030 kernel/workqueue.c:3319
+ worker_thread+0xb97/0x11d0 kernel/workqueue.c:3400
+ kthread+0x3d4/0x800 kernel/kthread.c:463
+ ret_from_fork+0x13b/0x1e0 arch/x86/kernel/process.c:148
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:245
+ </TASK>
+Allocated by task 294:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
+ poison_kmalloc_redzone mm/kasan/common.c:388 [inline]
+ __kasan_kmalloc+0x72/0x90 mm/kasan/common.c:405
+ kasan_kmalloc include/linux/kasan.h:260 [inline]
+ __do_kmalloc_node mm/slub.c:4382 [inline]
+ __kmalloc_noprof+0x230/0x3a0 mm/slub.c:4394
+ kmalloc_noprof include/linux/slab.h:909 [inline]
+ sk_prot_alloc+0xaa/0x210 net/core/sock.c:2239
+ sk_alloc+0x33/0x5e0 net/core/sock.c:2295
+ bt_sock_alloc+0x5c/0x890 net/bluetooth/af_bluetooth.c:151
+ sco_sock_alloc net/bluetooth/sco.c:585 [inline]
+ sco_sock_create+0x22d/0xc00 net/bluetooth/sco.c:616
+ bt_sock_create+0x399/0xa90 net/bluetooth/af_bluetooth.c:135
+ __sock_create+0x3a6/0x770 net/socket.c:1589
+ sock_create net/socket.c:1647 [inline]
+ __sys_socket_create net/socket.c:1684 [inline]
+ __sys_socket+0xd7/0x1b0 net/socket.c:1731
+ __do_sys_socket net/socket.c:1745 [inline]
+ __se_sys_socket net/socket.c:1743 [inline]
+ __x64_sys_socket+0x7a/0x90 net/socket.c:1743
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xd2/0x200 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+Freed by task 295:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3e/0x80 mm/kasan/common.c:68
+ kasan_save_free_info+0x40/0x50 mm/kasan/generic.c:576
+ poison_slab_object mm/kasan/common.c:243 [inline]
+ __kasan_slab_free+0x41/0x50 mm/kasan/common.c:275
+ kasan_slab_free include/linux/kasan.h:233 [inline]
+ slab_free_hook mm/slub.c:2428 [inline]
+ slab_free mm/slub.c:4701 [inline]
+ kfree+0x189/0x390 mm/slub.c:4900
+ sk_prot_free net/core/sock.c:2278 [inline]
+ __sk_destruct+0x4b0/0x630 net/core/sock.c:2373
+ sock_put include/net/sock.h:1962 [inline]
+ sco_sock_kill+0x64d/0x9b0 net/bluetooth/sco.c:526
+ sco_sock_release+0x770/0xa50 net/bluetooth/sco.c:1359
+ __sock_release net/socket.c:649 [inline]
+ sock_close+0xbd/0x230 net/socket.c:1439
+ __fput+0x435/0xa60 fs/file_table.c:468
+ task_work_run+0x18e/0x1f0 kernel/task_work.c:227
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ exit_to_user_mode_loop+0xaf/0xc0 kernel/entry/common.c:43
+ exit_to_user_mode_prepare include/linux/irq-entry-common.h:225 [inline]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:175 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:210 [inline]
+ do_syscall_64+0x1d4/0x200 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+The buggy address belongs to the object at ffff88810d2be000
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 848 bytes inside of
+ freed 1024-byte region [ffff88810d2be000, ffff88810d2be400)
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x10d2b8
+head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0x200000000000040(head|node=0|zone=2)
+page_type: f5(slab)
+raw: 0200000000000040 ffff888100042dc0 dead000000000100 dead000000000122
+raw: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
+head: 0200000000000040 ffff888100042dc0 dead000000000100 dead000000000122
+head: 0000000000000000 0000000000100010 00000000f5000000 0000000000000000
+head: 0200000000000003 ffffea000434ae01 00000000ffffffff 00000000ffffffff
+head: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+Memory state around the buggy address:
+ ffff88810d2be200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88810d2be280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88810d2be300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                 ^
+ ffff88810d2be380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88810d2be400: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+[tid:88] sco_connect_cfm: deleting hcon 000000000b395e49 status 4
+
+
